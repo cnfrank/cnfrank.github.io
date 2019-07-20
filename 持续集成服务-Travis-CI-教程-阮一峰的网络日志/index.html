@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- layout.ejs-->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Frank&#39;s Blog">
+    <meta name="author" content="Frank Zhou">
+    <meta name="keyword" content="frank zhou">
+    <link rel="canonical" href="http://yoursite.com/持续集成服务-Travis-CI-教程-阮一峰的网络日志/">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="Frank&#39;s Blog" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <title>
+        
+        持续集成服务 Travis CI 教程 - 阮一峰的网络日志｜null
+        
+    </title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/main.css">
+
+    
+      <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+      <link rel="stylesheet" href="/css/highlight.css">
+    
+
+    
+      <script id="dsq-count-scr" src="//hexo-a-rsnippet.disqus.com/count.js" async></script>
+    
+
+
+    
+
+    
+
+    
+
+
+    
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+    
+
+
+
+
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <!-- user customization -->
+    <link rel="stylesheet" href="/css/arsnippet.css">
+    <script src="/js/arsnippet.css.js"></script>
+</head>
+
+<style>
+    header.intro-header {
+        background-image: url('')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<header>
+  <nav class="navbar navbar-default header-navbar" id="nav-top" data-ispost = "true" data-istags="false" data-ishome = "false" >
+    <div class="container-fluid">
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" aria-expanded="false"  data-target="#website_navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="navbar-brand animated pulse">
+          <a class="brand-logo" href="/">
+            Frank's Blog
+          </a>
+        </span>
+      </div>
+
+      <div class="collapse navbar-collapse" id="website_navbar">
+          <ul class="nav navbar-nav navbar-right">
+              
+                <li>
+                  <a href="/">home</a>
+                </li>
+              
+                <li>
+                  <a href="/tutorial/">Tutorial</a>
+                </li>
+              
+                <li>
+                  <a href="/leetcode-category/">LeetCode-category</a>
+                </li>
+              
+                <li>
+                  <a href="/leetcode-tag/">LeetCode-tag</a>
+                </li>
+              
+                <li>
+                  <a href="/archives/">archives</a>
+                </li>
+              
+                <li>
+                  <a href="/tags/">tags</a>
+                </li>
+              
+                <li>
+                  <a href="/portfolio-slim/">projects</a>
+                </li>
+              
+                <li>
+                  <a href="/support/">support</a>
+                </li>
+              
+                <li>
+                  <a href="/atom.xml">RSS</a>
+                </li>
+              
+          </ul>
+      </div>
+  </nav>
+
+
+  
+    <style>
+       .intro-header {
+          background-image: url('/img/sky-clouds-moon-horizon.jpg?h=350&amp;auto=compress&amp;cs=tinysrgb');
+      }
+    </style>
+
+    <div class="intro-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                    <div class="site-heading">
+                        <h1>持续集成服务 Travis CI 教程 - 阮一峰的网络日志</h1>
+                        
+                        
+                          <span class="meta">
+                               <span class="meta-item">Author: John Doe</span>
+                               <span class="meta-item">Date: Jul 20, 2019</span>
+                               
+                                 <span class="meta-item">Updated On: Jul 20, 2019</span>
+                               
+                          </span>
+                          <div class="tags text-center">
+                              Categories: 
+                          </div>
+                          <div class="tags text-center">
+                              Tags: 
+                          </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+</header>
+
+
+<!-- Main Content -->
+<!-- post.ejs -->
+<article>
+    <div class="container">
+      <div class="col-lg-8 col-lg-offset-1 col-sm-9">
+          
+            <div class="text-center"><div class="addthis_inline_share_toolbox">
+  <script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5272bc2a7b3c1ddc" async = "async" ></script>
+</div>
+</div><hr>
+          
+          <div class="subscribe"><a href="http://eepurl.com/dh6iCD" target="_blank">Get Updated for Each Release!</a></div><p>
+          <p>编写代码只是软件开发的一小部分，更多的时间往往花在构建（build）和测试（test）。</p>
+<p>为了提高软件开发的效率，构建和测试的自动化工具层出不穷。<a href="https://travis-ci.org/" target="_blank" rel="noopener">Travis CI</a> 就是这类工具之中，<a href="https://github.com/blog/2463-github-welcomes-all-ci-tools" target="_blank" rel="noopener">市场份额</a>最大的一个。</p>
+<p><img src=":/812807f73fff460b9b829863330b0ccd" alt></p>
+<p>本文介绍 Travis CI 的基本用法。用好这个工具不仅可以提高效率，还能使开发流程更可靠和专业化，从而提高软件的价值。而且，它对于开源项目是免费的，不花一分钱，就能帮你做掉很多事情。</p>
+<h2 id="一、什么是持续集成？"><a href="#一、什么是持续集成？" class="headerlink" title="一、什么是持续集成？"></a>一、什么是持续集成？</h2><p>Travis CI 提供的是持续集成服务（Continuous Integration，简称 CI）。它绑定 Github 上面的项目，只要有新的代码，就会自动抓取。然后，提供一个运行环境，执行测试，完成构建，还能部署到服务器。</p>
+<p>持续集成指的是只要代码有变更，就自动运行构建和测试，反馈运行结果。确保符合预期以后，再将新代码”集成”到主干。</p>
+<p>持续集成的好处在于，每次代码的小幅变更，就能看到运行结果，从而不断累积小的变更，而不是在开发周期结束时，一下子合并一大块代码。</p>
+<h2 id="二、使用准备"><a href="#二、使用准备" class="headerlink" title="二、使用准备"></a>二、使用准备</h2><p>Travis CI 只支持 Github，不支持其他代码托管服务。这意味着，你必须满足以下条件，才能使用 Travis CI。</p>
+<blockquote>
+<ul>
+<li>拥有 GitHub 帐号</li>
+<li>该帐号下面有一个项目</li>
+<li>该项目里面有可运行的代码</li>
+<li>该项目还包含构建或测试脚本</li>
+</ul>
+</blockquote>
+<p>如果这些条件都没问题，就可以开始使用 Travis CI 了。</p>
+<p>首先，访问官方网站 <a href="https://travis-ci.org/" target="_blank" rel="noopener">travis-ci.org</a>，点击右上角的个人头像，使用 Github 账户登入 Travis CI。</p>
+<p>Travis 会列出 Github 上面你的所有仓库，以及你所属于的组织。此时，选择你需要 Travis 帮你构建的仓库，打开仓库旁边的开关。一旦激活了一个仓库，Travis 会监听这个仓库的所有变化。</p>
+<p><img src=":/aaecf45b3fa347e3a385edc8f119715e" alt></p>
+<h2 id="三、-travis-yml"><a href="#三、-travis-yml" class="headerlink" title="三、.travis.yml"></a>三、.travis.yml</h2><p>Travis 要求项目的根目录下面，必须有一个<code>.travis.yml</code>文件。这是配置文件，指定了 Travis 的行为。该文件必须保存在 Github 仓库里面，一旦代码仓库有新的 Commit，Travis 就会去找这个文件，执行里面的命令。</p>
+<p>这个文件采用 <a href="http://www.ruanyifeng.com/blog/2016/07/yaml.html" target="_blank" rel="noopener">YAML</a> 格式。下面是一个最简单的 Python 项目的<code>.travis.yml</code>文件。</p>
+<blockquote>
+<pre><code>language: python
+script: true</code></pre></blockquote>
+<p>上面代码中，设置了两个字段。<code>language</code>字段指定了默认运行环境，这里设定使用 Python 环境。<code>script</code>字段指定要运行的脚本，<code>script: true</code>表示不执行任何脚本，状态直接设为成功。</p>
+<p>Travis 默认提供的运行环境，请参考<a href="https://docs.travis-ci.com/user/languages" target="_blank" rel="noopener">官方文档</a> 。目前一共支持31种语言，以后还会不断增加。</p>
+<p>下面是一个稍微复杂一点的<code>.travis.yml</code>。</p>
+<blockquote>
+<pre><code>language: python
+sudo: required
+before_install: sudo pip install foo
+script: py.test</code></pre></blockquote>
+<p>上面代码中，设置了四个字段：运行环境是 Python，需要<code>sudo</code>权限，在安装依赖之前需要安装<code>foo</code>模块，然后执行脚本<code>py.test</code>。</p>
+<h2 id="四、运行流程"><a href="#四、运行流程" class="headerlink" title="四、运行流程"></a>四、运行流程</h2><p>Travis 的运行流程很简单，任何项目都会经过两个阶段。</p>
+<blockquote>
+<ul>
+<li>install 阶段：安装依赖</li>
+<li>script 阶段：运行脚本</li>
+</ul>
+</blockquote>
+<h3 id="4-1-install-字段"><a href="#4-1-install-字段" class="headerlink" title="4.1 install 字段"></a>4.1 install 字段</h3><p><code>install</code>字段用来指定安装脚本。</p>
+<blockquote>
+<pre><code>install: ./install-dependencies.sh</code></pre></blockquote>
+<p>如果有多个脚本，可以写成下面的形式。</p>
+<blockquote>
+<pre><code>install:
+  - command1
+  - command2</code></pre></blockquote>
+<p>上面代码中，如果<code>command1</code>失败了，整个构建就会停下来，不再往下进行。</p>
+<p>如果不需要安装，即跳过安装阶段，就直接设为<code>true</code>。</p>
+<blockquote>
+<pre><code>install: true</code></pre></blockquote>
+<h3 id="4-2、script-字段"><a href="#4-2、script-字段" class="headerlink" title="4.2、script 字段"></a>4.2、script 字段</h3><p><code>script</code>字段用来指定构建或测试脚本。</p>
+<blockquote>
+<pre><code>script: bundle exec thor build</code></pre></blockquote>
+<p>如果有多个脚本，可以写成下面的形式。</p>
+<blockquote>
+<pre><code>script:
+  - command1
+  - command2</code></pre></blockquote>
+<p>注意，<code>script</code>与<code>install</code>不一样，如果<code>command1</code>失败，<code>command2</code>会继续执行。但是，整个构建阶段的状态是失败。</p>
+<p>如果<code>command2</code>只有在<code>command1</code>成功后才能执行，就要写成下面这样。</p>
+<blockquote>
+<pre><code>script: command1 &amp;&amp; command2</code></pre></blockquote>
+<h3 id="4-3-实例：Node-项目"><a href="#4-3-实例：Node-项目" class="headerlink" title="4.3 实例：Node 项目"></a>4.3 实例：Node 项目</h3><p>Node 项目的环境需要写成下面这样。</p>
+<blockquote>
+<pre><code>language: node_js
+node_js:
+  - &quot;8&quot;</code></pre></blockquote>
+<p>上面代码中，<code>node_js</code>字段用来指定 Node 版本。</p>
+<p>Node 项目的<code>install</code>和<code>script</code>阶段都有默认脚本，可以省略。</p>
+<blockquote>
+<ul>
+<li><code>install</code>默认值：npm install</li>
+<li><code>script</code>默认值：npm test</li>
+</ul>
+</blockquote>
+<p>更多设置请看<a href="https://docs.travis-ci.com/user/languages/javascript-with-nodejs/" target="_blank" rel="noopener">官方文档</a>。</p>
+<h3 id="4-4-部署"><a href="#4-4-部署" class="headerlink" title="4.4 部署"></a>4.4 部署</h3><p><code>script</code>阶段结束以后，还可以设置<a href="https://docs.travis-ci.com/user/notifications/" target="_blank" rel="noopener">通知步骤</a>（notification）和<a href="https://docs.travis-ci.com/user/deployment/" target="_blank" rel="noopener">部署步骤</a>（deployment），它们不是必须的。</p>
+<p>部署的脚本可以在<code>script</code>阶段执行，也可以使用 Travis 为几十种常见服务提供的快捷部署功能。比如，要部署到 <a href="https://docs.travis-ci.com/user/deployment/pages/" target="_blank" rel="noopener">Github Pages</a>，可以写成下面这样。</p>
+<blockquote>
+<pre><code>deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master</code></pre></blockquote>
+<p>其他部署方式，请看<a href="https://docs.travis-ci.com/user/deployment/" target="_blank" rel="noopener">官方文档</a>。</p>
+<h3 id="4-5-钩子方法"><a href="#4-5-钩子方法" class="headerlink" title="4.5 钩子方法"></a>4.5 钩子方法</h3><p>Travis 为上面这些阶段提供了7个钩子。</p>
+<blockquote>
+<ul>
+<li>before_install：install 阶段之前执行</li>
+<li>before_script：script 阶段之前执行</li>
+<li>after_failure：script 阶段失败时执行</li>
+<li>after_success：script 阶段成功时执行</li>
+<li>before_deploy：deploy 步骤之前执行</li>
+<li>after_deploy：deploy 步骤之后执行</li>
+<li>after_script：script 阶段之后执行</li>
+</ul>
+</blockquote>
+<p>完整的生命周期，从开始到结束是下面的流程。</p>
+<blockquote>
+<ol>
+<li>before_install</li>
+<li>install</li>
+<li>before_script</li>
+<li>script</li>
+<li>after_success or after_failure</li>
+<li>[OPTIONAL] before_deploy</li>
+<li>[OPTIONAL] deploy</li>
+<li>[OPTIONAL] after_deploy</li>
+<li>after_script</li>
+</ol>
+</blockquote>
+<p>下面是一个<code>before_install</code>钩子的例子。</p>
+<blockquote>
+<pre><code>before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libxml2-dev</code></pre></blockquote>
+<p>上面代码表示<code>before_install</code>阶段要做两件事，第一件事是要更新依赖，第二件事是安装<code>libxml2-dev</code>。用到的几个参数的含义如下：<code>-qq</code>表示减少中间步骤的输出，<code>-y</code>表示如果需要用户输入，总是输入<code>yes</code>。</p>
+<h3 id="4-6-运行状态"><a href="#4-6-运行状态" class="headerlink" title="4.6 运行状态"></a>4.6 运行状态</h3><p>最后，Travis 每次运行，可能会返回四种状态。</p>
+<blockquote>
+<ul>
+<li>passed：运行成功，所有步骤的退出码都是<code>0</code></li>
+<li>canceled：用户取消执行</li>
+<li>errored：<code>before_install</code>、<code>install</code>、<code>before_script</code>有非零退出码，运行会立即停止</li>
+<li>failed ：<code>script</code>有非零状态码 ，会继续运行</li>
+</ul>
+</blockquote>
+<h2 id="五、使用技巧"><a href="#五、使用技巧" class="headerlink" title="五、使用技巧"></a>五、使用技巧</h2><h3 id="5-1-环境变量"><a href="#5-1-环境变量" class="headerlink" title="5.1 环境变量"></a>5.1 环境变量</h3><p><code>.travis.yml</code>的<code>env</code>字段可以定义环境变量。</p>
+<blockquote>
+<pre><code>env:
+  - DB=postgres
+  - SH=bash
+  - PACKAGE_VERSION=&quot;1.0.*&quot;</code></pre></blockquote>
+<p>然后，脚本内部就使用这些变量了。</p>
+<p>有些环境变量（比如用户名和密码）不能公开，这时可以通过 Travis 网站，写在每个仓库的设置页里面，Travis 会自动把它们加入环境变量。这样一来，脚本内部依然可以使用这些环境变量，但是只有管理员才能看到变量的值。具体操作请看<a href="https://docs.travis-ci.com/user/environment-variables" target="_blank" rel="noopener">官方文档</a>。</p>
+<p><img src=":/45b856f6ef2340298478c187796ff8f9" alt></p>
+<h3 id="5-2-加密信息"><a href="#5-2-加密信息" class="headerlink" title="5.2 加密信息"></a>5.2 加密信息</h3><p>如果不放心保密信息明文存在 Travis 的网站，可以使用 Travis 提供的加密功能。</p>
+<p>首先，安装 Ruby 的包<code>travis</code>。</p>
+<blockquote>
+<pre><code>$ gem install travis</code></pre></blockquote>
+<p>然后，就可以用<code>travis encrypt</code>命令加密信息。</p>
+<p>在项目的根目录下，执行下面的命令。</p>
+<blockquote>
+<pre><code>$ travis encrypt SOMEVAR=secretvalue</code></pre></blockquote>
+<p>上面命令中，<code>SOMEVAR</code>是要加密的变量名，<code>secretvalue</code>是要加密的变量值。执行以后，屏幕上会输出如下信息。</p>
+<blockquote>
+<pre><code>secure: &quot;.... encrypted data ....&quot;</code></pre></blockquote>
+<p>现在，就可以把这一行加入<code>.travis.yml</code>。</p>
+<blockquote>
+<pre><code>env:
+  global:
+    - secure: &quot;.... encrypted data ....&quot;</code></pre></blockquote>
+<p>然后，脚本里面就可以使用环境变量<code>$SOMEVAR</code>了，Travis 会在运行时自动对它解密。</p>
+<p><code>travis encrypt</code>命令的<code>--add</code>参数会把输出自动写入<code>.travis.yml</code>，省掉了修改<code>env</code>字段的步骤。</p>
+<blockquote>
+<pre><code>$ travis encrypt SOMEVAR=secretvalue --add</code></pre></blockquote>
+<p>详细信息请看<a href="https://docs.travis-ci.com/user/encryption-keys/" target="_blank" rel="noopener">官方文档</a>。</p>
+<h3 id="5-3-加密文件"><a href="#5-3-加密文件" class="headerlink" title="5.3 加密文件"></a>5.3 加密文件</h3><p>如果要加密的是文件（比如私钥），Travis 提供了加密文件功能。</p>
+<p>安装命令行客户端以后，使用下面的命令登入 Travis CI。</p>
+<blockquote>
+<pre><code>$ travis login </code></pre></blockquote>
+<p>然后，进入项目的根目录，使用<code>travis encrypt-file</code>命令加密那些想要加密的文件。</p>
+<blockquote>
+<pre><code>$ travis encrypt-file bacon.txt
+
+encrypting bacon.txt for rkh/travis-encrypt-file-example
+storing result as bacon.txt.enc
+storing secure env variables for decryption
+
+Please add the following to your build script (before_install stage in your .travis.yml, for instance):
+
+    openssl aes-256-cbc -K $encrypted_0a6446eb3ae3_key -iv $encrypted_0a6446eb3ae3_key -in bacon.txt.enc -out bacon.txt -d
+
+Pro Tip: You can add it automatically by running with --add.
+
+Make sure to add bacon.txt.enc to the git repository.
+Make sure not to add bacon.txt to the git repository.
+Commit all changes to your .travis.yml.</code></pre></blockquote>
+<p>上面的代码对文件<code>bacon.txt</code>进行加密，加密后会生成<code>bacon.txt.enc</code>，该文件需要提交到代码库。此外，该命令还会生成一个环境变量<code>$encrypted_0a6446eb3ae3_key</code>，保存密钥，储存在 Travis CI，文件解密时需要这个环境变量。你需要把解密所需的<code>openssl</code>命令，写在<code>.travis.yml</code>的<code>before_install</code>字段里面。这些都写在上面的命令行提示里面。</p>
+<p><code>--add</code>参数可以自动把环境变量写入<code>.travis.yml</code>。</p>
+<blockquote>
+<pre><code>$ travis encrypt-file bacon.txt --add
+
+encrypting bacon.txt for rkh/travis-encrypt-file-example
+storing result as bacon.txt.enc
+storing secure env variables for decryption
+
+Make sure to add bacon.txt.enc to the git repository.
+Make sure not to add bacon.txt to the git repository.
+Commit all changes to your .travis.yml.</code></pre></blockquote>
+<p>详细信息请看<a href="https://docs.travis-ci.com/user/encrypting-files/" target="_blank" rel="noopener">官方文档</a>，实际的例子可以参考下面两篇文章。</p>
+<blockquote>
+<ul>
+<li><a href="https://gist.github.com/domenic/ec8b0fc8ab45f39403dd" target="_blank" rel="noopener">Auto-deploying built products to gh-pages with Travis</a></li>
+<li><a href="https://oncletom.io/2016/travis-ssh-deploy/" target="_blank" rel="noopener">SSH deploys with Travis CI</a></li>
+</ul>
+</blockquote>
+<p>（完）</p>
+
+          
+            <a href="https://www.patreon.com/arsnippet" target="_blank"><img src="/img/patreon.png" alt="support my work at patron"></a> <a href="https://arsnippet.freeflarum.com/" target="_blank"><img src="/img/forum.jpg" alt="support my work at patron"></a> <a href="https://discord.gg/CB6CPzq" target="_blank"><img src="/img/discord.png" alt="Join the Discord"></a>
+          
+          <hr>
+          <ul class="pager">
+              
+              <li class="previous">
+                  <a href="/hello-world/" data-toggle="tooltip" data-placement="left"
+                     title="Hello World">&larr; Previous Post</a>
+              </li>
+              
+              
+          </ul>
+        
+  <br>
+  
+  <!-- disqus start -->
+  <div class="comment">
+    <div id="disqus_thread"  class="disqus-thread"></div>
+      <script>
+      var disqus_shortname = 'hexo-a-rsnippet';
+      
+      var disqus_url = 'http://yoursite.com/持续集成服务-Travis-CI-教程-阮一峰的网络日志/';
+      
+      (function(){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  <!-- disqus end -->
+  
+
+  
+  </div>
+
+
+        
+  <div class="hidden-xs col-sm-3 toc-col">
+    <div class="toc-wrap">
+        Table of Contents
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、什么是持续集成？"><span class="toc-number">1.</span> <span class="toc-text">一、什么是持续集成？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、使用准备"><span class="toc-number">2.</span> <span class="toc-text">二、使用准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、-travis-yml"><span class="toc-number">3.</span> <span class="toc-text">三、.travis.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、运行流程"><span class="toc-number">4.</span> <span class="toc-text">四、运行流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-install-字段"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 install 字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2、script-字段"><span class="toc-number">4.2.</span> <span class="toc-text">4.2、script 字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-实例：Node-项目"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 实例：Node 项目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-部署"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-钩子方法"><span class="toc-number">4.5.</span> <span class="toc-text">4.5 钩子方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-运行状态"><span class="toc-number">4.6.</span> <span class="toc-text">4.6 运行状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、使用技巧"><span class="toc-number">5.</span> <span class="toc-text">五、使用技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-环境变量"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-加密信息"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 加密信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-加密文件"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 加密文件</span></a></li></ol></li></ol>
+        
+    </div>
+  </div>
+
+
+      </div>
+  </div>
+</article>
+
+<!-- Footer -->
+<!-- footer.ejs -->
+<footer>
+    <div class="text-center">
+      <ul class="list-inline">
+          
+              <li>
+                  <a href="/atom.xml" target="_blank">
+                      <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                      </span>
+                  </a>
+              </li>
+          
+          
+          
+
+          
+
+          
+
+          
+              <li>
+                  <a target="_blank"  href="https://github.com/cnfrank">
+                      <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                      </span>
+                  </a>
+              </li>
+          
+
+          
+
+          
+              <li>
+                  <a href="mailto:cnfrank527@gmail.com" target="_blank">
+                      <span class="fa-stack fa-lg">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                      </span>
+                  </a>
+              </li>
+          
+
+      </ul>
+     <div class="text-muted copyright">
+            &copy;
+            
+              2019
+            
+            
+              <i class="fa fa-heart"></i>
+            
+            Frank Zhou
+        <br>
+          
+              Powered by <a target="_blank" href="https://hexo.io">Hexo</a>
+          
+          
+            |
+          
+          
+              Theme - <a href="https://github.com/huyingjie/hexo-theme-A-RSnippet" target="_blank">A-RSnippet</a> v0.1.0
+          
+          
+      </div>
+    </div>
+</footer>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+</body>
+
+</html>
